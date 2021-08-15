@@ -1,0 +1,258 @@
+# Main system configuration
+# Controls system behavior and plugin selection
+
+# System settings
+system:
+  name: "Modular Face Verification System"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"
+  log_directory: "../../logs"
+  data_directory: "../../data"
+  
+# Plugin configuration
+plugins:
+  # Basic face detector plugin
+  basic_detector:
+    type: "detection"
+    config:
+      min_confidence: 0.5
+      face_cascade_path: "../../cascades/haarcascade_frontalface_alt2.xml"
+      fallback_mode: true
+      confidence_threshold: 0.7
+      min_face_size: [30, 30]
+      max_face_size: [500, 500]
+      scale_factor: 1.1
+      min_neighbors: 5
+  
+  # VGG Face Recognition Plugin  
+  vgg_face:
+    type: "recognition"
+    config:
+      model_weights: "../../models/vgg_face_weights.h5"
+      image_size: [224, 224]
+      similarity_threshold: 0.45
+      use_preprocessing: true
+      embedding_cache_size: 1000
+      enable_real_time_recognition: true
+  
+  # Blink Detector Plugin
+  blink_detector:
+    type: "liveness"
+    config:
+      blink_threshold: 0.3
+      confidence_threshold: 0.8
+      frame_count: 10
+      eye_detection_method: "haar"
+      use_eyeglasses_filter: true
+      enable_temporal_analysis: true
+  
+  # Email Notifier Plugin
+  email_notifier:
+    type: "notifications"
+    config:
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      email_address: ""
+      email_password: ""
+      use_tls: true
+      timeout: 30
+      cooldown_period: 300
+      intruder_notification_enabled: true
+      system_notification_enabled: true
+  
+  # Device Plugin Configuration
+  device:
+    plugin: "auto_detect"
+    config:
+      performance_mode: "standard"
+      optimize_for_resources: true
+      auto_adjust_performance: true
+      enable_hardware_monitoring: true
+  
+  # Processing Plugin Configuration
+  processing:
+    plugin: "standard_preprocessing"
+    config:
+      target_size: [224, 224]
+      normalize_method: "standard"
+      use_histogram_equalization: false
+      gaussian_blur: [3, 3]
+      gamma_correction: 1.0
+      enable_color_correction: true
+  
+  # Storage Plugin Configuration
+  storage:
+    plugin: "sqlite_storage"
+    config:
+      database_path: "../../data/face_verification.db"
+      backup_enabled: true
+      backup_interval_hours: 24
+      max_database_size_mb: 100
+      enable_encryption: false
+
+# Performance Settings
+performance:
+  # Performance Modes: standard, high_speed, ultra_high
+  mode: "standard"
+  
+  # Frame Processing Settings
+  target_fps: 15
+  max_processing_threads: 4
+  enable_parallel_processing: true
+  
+  # Memory Management
+  max_memory_usage_mb: 512
+  enable_memory_monitoring: true
+  cache_enabled: true
+  cache_size_mb: 256
+  
+  # GPU Settings (if available)
+  gpu_acceleration: false
+  gpu_memory_limit_mb: 1024
+
+# Security Settings
+security:
+  # Face Recognition Security
+  enable_liveness_detection: true
+  liveness_required_for_intruders: true
+  minimum_confidence_threshold: 0.6
+  
+  # Data Security
+  enable_data_encryption: false
+  user_data_encryption: false
+  audit_logging_enabled: true
+  log_all_verification_attempts: true
+  
+  # Access Control
+  enable_authentication: false
+  admin_password_hash: ""
+  session_timeout_minutes: 30
+  
+  # Anti-Spoofing
+  enable_photo_detection: true
+  enable_video_replay_detection: true
+  enable_mask_detection: false
+
+# Camera Configuration
+camera:
+  # Camera Source
+  source: 0  # 0 for default camera, or RTSP URL
+  resolution: [640, 480]
+  fps: 30
+  rotate_camera: 0  # 0, 90, 180, 270 degrees
+  
+  # Camera Settings
+  exposure: -1  # auto
+  brightness: 0
+  contrast: 0
+  saturation: 0
+  gain: 0
+  
+  # Recording Settings
+  enable_recording: false
+  recording_directory: "../../data/recordings"
+  recording_format: "mp4"
+  recording_quality: "medium"
+  max_recording_size_mb: 100
+
+# User Management
+users:
+  # User Enrollment Settings
+  enable_user_registration: true
+  max_users: 100
+  images_per_user: 10
+  enrollment_images_required: 3
+  
+  # User Data Management
+  user_image_directory: "../../data/users"
+  intruder_image_directory: "../../data/intruders"
+  enable_user_deletion: true
+  retain_user_data_days: 365
+  
+  # Verification Settings
+  enable_verification_logging: true
+  store_verification_images: true
+  verification_retention_days: 90
+
+# Alert Settings
+alerts:
+  # Intruder Detection
+  enable_intruder_detection: true
+  intrurer_confidence_threshold: 0.7
+  intruder_detection_cooldown_seconds: 300
+  
+  # Alert Methods
+  enable_email_alerts: true
+  enable_sms_alerts: false
+  enable_local_alerts: true
+  enable_push_notifications: false
+  
+  # Alert Content
+  include_image_in_alert: true
+  include_timestamp_in_alert: true
+  include_location_in_alert: true
+  alert_format: "detailed"
+
+# Network Settings
+network:
+  # API Settings (if web interface enabled)
+  api_enabled: false
+  api_port: 5000
+  api_host: "0.0.0.0"
+  enable_cors: true
+  api_authentication_required: false
+  
+  # Remote Access
+  enable_remote_access: false
+  remote_access_port: 8080
+  enable_encryption: false
+  
+  # Data Sync
+  enable_cloud_sync: false
+  sync_interval_minutes: 60
+  cloud_provider: "aws"  # aws, gcp, azure
+
+# Logging Configuration
+logging:
+  # Log Settings
+  log_level: "INFO"
+  log_file: "../../logs/system.log"
+  max_log_size_mb: 10
+  backup_count: 5
+  enable_console_logging: true
+  
+  # Log Categories
+  log_plugin_events: true
+  log_verification_events: true
+  log_alert_events: true
+  log_performance_events: false
+  log_security_events: true
+
+# Backup and Recovery
+backup:
+  # Backup Settings
+  enable_automatic_backup: true
+  backup_interval_hours: 24
+  backup_directory: "../../backups"
+  max_backup_files: 7
+  
+  # Backup Content
+  backup_user_data: true
+  backup_configuration: true
+  backup_database: true
+  backup_log_files: false
+  
+  # Recovery
+  enable_recovery_mode: false
+  recovery_directory: "../../recovery"
+  auto_recovery_enabled: false
+
+# Development Settings (only used when debug=true)
+development:
+  enable_profiling: false
+  profiling_output_file: "../../logs/profile.log"
+  enable_mock_data: false
+  mock_data_directory: "../../tests/mock_data"
+  test_mode: false
+  test_database: "../../tests/test.db"

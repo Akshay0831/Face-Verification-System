@@ -1,0 +1,347 @@
+# Plugin registry configuration
+# Defines available plugins and settings
+
+# Detection plugins
+detection:
+  default: basic_detector
+  plugins:
+    basic_detector:
+      class: BasicFaceDetector
+      file: detection/basic_detector.py
+      version: "1.0.0"
+        description: "OpenCV cascade classifier face detection"
+      device_compatibility: [raspberry_pi, windows, linux, android]
+      dependencies: [opencv-python]
+      required_config: [min_confidence, face_cascade_path]
+      default_config:
+        min_confidence: 0.5
+        face_cascade_path: "../../cascades/haarcascade_frontalface_default.xml"
+    
+    haar_detector:
+      class: HaarCascadeDetector
+      file: detection/haar_detector.py
+      version: "1.0.0"
+      description: "Haar Cascade face detection using OpenCV"
+      device_compatibility: [raspberry_pi, windows, linux, android]
+      dependencies: [opencv-python]
+      required_config: [cascade_file, confidence_threshold]
+      default_config:
+        cascade_file: "../../cascades/haarcascade_frontalface_default.xml"
+        confidence_threshold: 0.7
+        scale_factor: 1.1
+        min_neighbors: 5
+        min_size: (30, 30)
+    
+    hog_detector:
+      class: HOGDetector
+      file: detection/hog_detector.py
+      version: "1.0.0"
+      description: "Histogram of Oriented Gradients face detection"
+      device_compatibility: [windows, linux, android]
+      dependencies: [opencv-python]
+      required_config: [confidence_threshold]
+      default_config:
+        confidence_threshold: 0.7
+        scale_factor: 1.05
+        min_neighbors: 8
+        use_dlib: false
+    
+    viola_jones:
+      class: ViolaJonesDetector
+      file: detection/viola_jones.py
+      version: "1.0.0"
+      description: "Viola-Jones algorithm for lightweight detection"
+      device_compatibility: [raspberry_pi, android]
+      dependencies: [opencv-python]
+      required_config: [cascade_file, confidence_threshold]
+      default_config:
+        cascade_file: "../../cascades/haarcascade_frontalface_alt2.xml"
+        confidence_threshold: 0.5
+        scale_factor: 1.1
+        min_neighbors: 3
+
+# Recognition Plugins
+recognition:
+  default: vgg_face
+  plugins:
+    vgg_face:
+      class: VGGFaceRecognizer
+      file: recognition/vgg_face.py
+      version: "1.0.0"
+      description: "VGG-Face based face recognition with transfer learning"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [tensorflow, keras, opencv-python, numpy]
+      required_config: [model_weights, image_size, similarity_threshold]
+      default_config:
+        model_weights: "../../models/vgg_face_weights.h5"
+        image_size: [224, 224]
+        similarity_threshold: 0.45
+        use_preprocessing: true
+    
+    facenet:
+      class: FaceNetRecognizer
+      file: recognition/facenet.py
+      version: "1.0.0"
+      description: "FaceNet recognition with triplet loss"
+      device_compatibility: [windows, linux]
+      dependencies: [tensorflow, keras, opencv-python, numpy]
+      required_config: [model_weights, image_size, threshold]
+      default_config:
+        model_weights: "../../models/facenet_weights.h5"
+        image_size: [160, 160]
+        threshold: 0.7
+        use_embedding_cache: true
+    
+    lbph:
+      class: LBPHRecognizer
+      file: recognition/lbph.py
+      version: "1.0.0"
+      description: "Local Binary Patterns Histograms for lightweight recognition"
+      device_compatibility: [raspberry_pi, android, windows, linux]
+      dependencies: [opencv-python, numpy]
+      required_config: [radius, neighbors, grid_x, grid_y, threshold]
+      default_config:
+        radius: 1
+        neighbors: 8
+        grid_x: 8
+        grid_y: 8
+        threshold: 80
+        use_histogram_equalization: true
+
+# Liveness Detection Plugins
+liveness:
+  default: blink_detector
+  plugins:
+    blink_detector:
+      class: BlinkDetector
+      file: liveness/blink_detector.py
+      version: "1.0.0"
+      description: "Eye blink detection for liveness verification"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [opencv-python, numpy]
+      required_config: [blink_threshold, confidence_threshold, frame_count]
+      default_config:
+        blink_threshold: 0.3
+        confidence_threshold: 0.8
+        frame_count: 10
+        eye_detection_method:haar
+        use_eyeglasses_filter: true
+    
+    motion_detector:
+      class:MotionDetector
+      file: liveness/motion_detector.py
+      version: "1.0.0"
+      description: "Motion-based liveness detection using temporal analysis"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [opencv-python, numpy]
+      required_config: [motion_threshold, frame_count, confidence_threshold]
+      default_config:
+        motion_threshold: 0.2
+        frame_count: 15
+        confidence_threshold: 0.75
+        use_optical_flow: true
+        blur_method: gaussian
+    
+    texture_analyzer:
+      class: TextureAnalyzer
+      file: liveness/texture_analyzer.py
+      version: "1.0.0"
+      description: "Texture analysis for photo vs real face detection"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [opencv-python, numpy, scipy]
+      required_config: [texture_threshold, confidence_threshold]
+      default_config:
+        texture_threshold: 0.6
+        confidence_threshold: 0.8
+        use_laplacian: true
+        wavelet_method: haar
+
+# Notification Plugins
+notifications:
+  default: email_notifier
+  plugins:
+    email_notifier:
+      class: EmailNotifier
+      file: notifications/email_notifier.py
+      version: "1.0.0"
+      description: "Email notifications using SMTP"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [smtplib]
+      required_config: [smtp_server, smtp_port, email_address, email_password]
+      default_config:
+        smtp_server: "smtp.gmail.com"
+        smtp_port: 587
+        email_address: ""
+        email_password: ""
+        use_tls: true
+        timeout: 30
+        cooldown_period: 300
+    
+    sms_notifier:
+      class: SMSNotifier
+      file: notifications/sms_notifier.py
+      version: "1.0.0"
+      description: "SMS notifications using Twilio API"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: [twilio]
+      required_config: [twilio_account_sid, twilio_auth_token, from_number]
+      default_config:
+        twilio_account_sid: ""
+        twilio_auth_token: ""
+        from_number: ""
+        recipient_numbers: []
+        cooldown_period: 300
+    
+    local_notifier:
+      class: LocalNotifier
+      file: notifications/local_notifier.py
+      version: "1.0.0"
+      description: "Local system notifications"
+      device_compatibility: [windows, linux, raspberry_pi]
+      dependencies: []
+      required_config: [notification_method]
+      default_config:
+        notification_method: "popup"
+        sound_enabled: true
+        visual_alert: true
+        log_to_file: true
+
+# Device Plugins
+devices:
+  default: auto_detect
+  plugins:
+    auto_detect:
+      class: AutoDetectDevice
+      file: devices/auto_detect.py
+      version: "1.0.0"
+      description: "Automatically detect and configure device type"
+      device_compatibility: [raspberry_pi, windows, linux, android, ios]
+      dependencies: []
+      required_config: []
+      default_config:
+        performance_mode: "standard"
+        optimize_for_resources: true
+    
+    raspberry_pi:
+      class: RaspberryPiDevice
+      file: devices/raspberry_pi.py
+      version: "1.0.0"
+      description: "Optimized for Raspberry Pi embedded systems"
+      device_compatibility: [raspberry_pi]
+      dependencies: [picamera, opencv-python]
+      required_config: [camera_resolution, fps]
+      default_config:
+        camera_resolution: [640, 480]
+        fps: 30
+        use_gpu_acceleration: false
+        enable_thermal_monitoring: true
+        memory_limit_mb: 512
+    
+    windows_device:
+      class: WindowsDevice
+      file: devices/windows_device.py
+      version: "1.0.0"
+      description: "Optimized for Windows desktop systems"
+      device_compatibility: [windows]
+      dependencies: [opencv-python]
+      required_config: [gpu_acceleration]
+      default_config:
+        gpu_acceleration: true
+        multithreading_enabled: true
+        enable_notifications: true
+        max_memory_usage: "2GB"
+    
+    linux_device:
+      class: LinuxDevice
+      file: devices/linux_device.py
+      version: "1.0.0"
+      description: "Optimized for Linux systems"
+      device_compatibility: [linux]
+      dependencies: [opencv-python, psutil]
+      required_config: [gpu_acceleration]
+      default_config:
+        gpu_acceleration: false
+        multithreading_enabled: true
+        enable_cpu_affinity: true
+        max_cpu_cores: 4
+
+# Processing Pipeline Plugins
+processing:
+  default: standard_preprocessing
+  plugins:
+    standard_preprocessing:
+      class: StandardPreprocessor
+      file: processing/standard_preprocessing.py
+      version: "1.0.0"
+      description: "Standard image preprocessing pipeline"
+      device_compatibility: [windows, linux, raspberry_pi, android]
+      dependencies: [opencv-python, numpy]
+      required_config: [target_size, normalize_method]
+      default_config:
+        target_size: [224, 224]
+        normalize_method: "standard"
+        use_histogram_equalization: false
+        gaussian_blur: [3, 3]
+        gamma_correction: 1.0
+    
+    face_alignment:
+      class: FaceAlignment
+      file: processing/face_alignment.py
+      version: "1.0.0"
+      description: "Face alignment for improved recognition accuracy"
+      device_compatibility: [windows, linux, raspberry_pi, android]
+      dependencies: [opencv-python, numpy]
+      required_config: [alignment_method, target_size]
+      default_config:
+        alignment_method: "landmarks"
+        target_size: [224, 224]
+        use_dlib_landmarks: false
+        rotation_range: 15
+        scale_range: 0.2
+
+# Storage Plugins
+storage:
+  default: sqlite_storage
+  plugins:
+    sqlite_storage:
+      class: SQLiteStorage
+      file: storage/sqlite_storage.py
+      version: "1.0.0"
+      description: "SQLite database storage for user data"
+      device_compatibility: [windows, linux, raspberry_pi, android]
+      dependencies: [sqlalchemy]
+      required_config: [database_path]
+      default_config:
+        database_path: "../../data/face_verification.db"
+        backup_enabled: true
+        backup_interval_hours: 24
+        max_database_size_mb: 100
+    
+    file_storage:
+      class: FileStorage
+      file: storage/file_storage.py
+      version: "1.0.0"
+      description: "File-based storage system"
+      device_compatibility: [windows, linux, raspberry_pi, android]
+      dependencies: []
+      required_config: [storage_directory]
+      default_config:
+        storage_directory: "../../data"
+        user_subdirectory: "users"
+        intruder_subdirectory: "intruders"
+        file_format: "jpg"
+        image_quality: 85
+    
+    encrypted_storage:
+      class: EncryptedStorage
+      file: storage/encrypted_storage.py
+      version: "1.0.0"
+      description: "Encrypted storage for security-sensitive data"
+      device_compatibility: [windows, linux, raspberry_pi, android]
+      dependencies: [cryptography]
+      required_config: [encryption_key, storage_backend]
+      default_config:
+        encryption_key: ""
+        storage_backend: "sqlite"
+        encryption_algorithm: "AES-256"
+        key_derivation_method: "pbkdf2"

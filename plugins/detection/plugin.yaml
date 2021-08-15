@@ -1,0 +1,13 @@
+name: basic_detector
+type: detection
+version: 1.0.0
+description: Basic face detection using OpenCV cascade classifiers
+author: Face Verification System Team
+dependencies:
+  - opencv-python
+  - numpy
+auto_load: true
+file: basic_detector.py
+config:
+  min_confidence: 0.5
+  face_cascade_path: null

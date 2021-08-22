@@ -3,7 +3,12 @@
 import cv2
 import numpy as np
 from typing import List, Dict, Any
-import dlib
+
+try:
+    import dlib
+    DLIB_AVAILABLE = True
+except ImportError:
+    DLIB_AVAILABLE = False
 
 from core.base import IDetector, DetectionResult, PluginMetadata, DeviceType
 from utils import get_logger
@@ -15,6 +20,9 @@ class HOGDetector(IDetector):
     """HOG-based face detector using dlib"""
     
     def __init__(self, config: Dict[str, Any] = None):
+        if not DLIB_AVAILABLE:
+            raise ImportError("dlib is required for HOGDetector but not installed")
+        
         self.config = config or {}
         self.detector = None
         self.downscale = self.config.get('downscale', 1.3)

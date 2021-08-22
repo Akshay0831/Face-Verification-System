@@ -106,3 +106,5 @@ temporary_*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+logs

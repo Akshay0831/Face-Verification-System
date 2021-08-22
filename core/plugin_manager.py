@@ -11,11 +11,14 @@ import json
 
 from .base import (
     IPlugin, IDetector, IRecognizer, ILivenessDetector, 
-    INotifier, IDevice, IProcessor, IStorage, DeviceType
+    INotifier, IDevice, IProcessor, IStorage, DeviceType, PluginMetadata
 )
 from utils import get_logger
 
 logger = get_logger('plugin_manager')
+
+
+
 
 
 class PluginManager:

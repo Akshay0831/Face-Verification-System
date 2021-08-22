@@ -17,6 +17,7 @@ class DeviceType(Enum):
     ANDROID = "android"
     IOS = "ios"
     WEB = "web"
+    CAMERA = "camera"
 
 
 class PerformanceMode(Enum):
@@ -273,6 +274,30 @@ class PluginMetadata:
         self.author = author
         self.dependencies = dependencies or []
         self.device_compatibility = device_compatibility or []
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert metadata to dictionary"""
+        return {
+            'name': self.name,
+            'version': self.version,
+            'description': self.description,
+            'author': self.author,
+            'dependencies': self.dependencies,
+            'device_compatibility': [dt.value for dt in self.device_compatibility] if self.device_compatibility else []
+        }
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'PluginMetadata':
+        """Create PluginMetadata from dictionary"""
+        device_compat = [DeviceType(dt) for dt in data.get('device_compatibility', [])] if data.get('device_compatibility') else None
+        return cls(
+            name=data.get('name', ''),
+            version=data.get('version', ''),
+            description=data.get('description', ''),
+            author=data.get('author', ''),
+            dependencies=data.get('dependencies', []),
+            device_compatibility=device_compat
+        )
 
 
 class IPlugin(ABC):
@@ -291,4 +316,33 @@ class IPlugin(ABC):
     @abstractmethod
     def cleanup(self) -> bool:
         """Cleanup resources when plugin is unloaded"""
+        pass
+
+
+class ICamera(ABC):
+    """Abstract base class for camera devices"""
+    
+    @abstractmethod
+    def get_frame(self) -> Optional[np.ndarray]:
+        """Get current frame from camera"""
+        pass
+    
+    @abstractmethod
+    def start_capture(self) -> bool:
+        """Start frame capture"""
+        pass
+    
+    @abstractmethod
+    def stop_capture(self) -> bool:
+        """Stop frame capture"""
+        pass
+    
+    @abstractmethod
+    def set_resolution(self, width: int, height: int) -> bool:
+        """Set camera resolution"""
+        pass
+    
+    @abstractmethod
+    def set_fps(self, fps: int) -> bool:
+        """Set camera frame rate"""
         pass

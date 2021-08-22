@@ -108,6 +108,27 @@ class VGGFaceRecognizer(IRecognizer):
             logger.error(f"VGG-Face recognition failed: {e}")
             return RecognitionResult(user_id=None, confidence=0.0)
     
+    def enroll(self, user_id: str, face_image: np.ndarray) -> bool:
+        """Enroll a user with a face image"""
+        return self.register_user(user_id, face_image)
+    
+    def get_embedding(self, face_image: np.ndarray) -> np.ndarray:
+        """Get face embedding from image"""
+        try:
+            # Preprocess image
+            processed_face = cv2.resize(face_image, self.target_size)
+            processed_face = image.img_to_array(processed_face)
+            processed_face = np.expand_dims(processed_face, axis=0)
+            processed_face = self.preprocess_input(processed_face)
+            
+            # Extract embedding
+            embedding = self.embedding_model.predict(processed_face)[0]
+            return embedding
+            
+        except Exception as e:
+            logger.error(f"Error extracting embedding: {e}")
+            return np.array([])
+    
     def register_user(self, user_id: str, face_image: np.ndarray) -> bool:
         """Register a new user with their face image"""
         try:

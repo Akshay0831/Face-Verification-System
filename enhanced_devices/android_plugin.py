@@ -128,6 +128,26 @@ class AndroidPlugin(IDevice):
             return True
             
         except Exception as e:
+            logger.error(f"Error setting power saving: {e}")
+            return False
+    
+    def get_system_resources(self) -> Dict[str, Any]:
+        """Get Android system resources"""
+        try:
+            resources = {
+                'cpu_cores': self.cpu_cores,
+                'memory_limit': self.memory_limit,
+                'battery_threshold': self.battery_threshold,
+                'power_saving_enabled': self.power_saving_enabled,
+                'hardware_acceleration': self.hardware_acceleration
+            }
+            return resources
+        except Exception as e:
+            logger.error(f"Error getting system resources: {e}")
+            return {}
+            return True
+            
+        except Exception as e:
             logger.error(f"Error setting Android power saving: {e}")
             return False
     

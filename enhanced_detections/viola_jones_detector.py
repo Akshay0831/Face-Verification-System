@@ -96,14 +96,9 @@ class ViolaJonesDetector(IDetector):
         except Exception as e:
             logger.error(f"Viola-Jones detection failed: {e}")
             return []
-                detections.append(detection)
             
-            logger.info(f"Viola-Jones detection found {len(detections)} faces")
-            return detections
-            
-        except Exception as e:
-            logger.error(f"Viola-Jones detection failed: {e}")
-            return []
+        logger.info(f"Viola-Jones detection found {len(detections)} faces")
+        return detections
     
     def get_supported_modes(self) -> List[str]:
         """Return supported detection modes"""

@@ -17,7 +17,11 @@ class LBPHRecognizer(IRecognizer):
     
     def __init__(self, config: Dict[str, Any] = None):
         self.config = config or {}
-        self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+        try:
+            self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+        except AttributeError:
+            # Fallback for OpenCV versions without face module
+            self.recognizer = None
         self.radius = self.config.get('radius', 3)
         self.neighbors = self.config.get('neighbors', 8)
         self.grid_x = self.config.get('grid_x', 8)
@@ -74,6 +78,10 @@ class LBPHRecognizer(IRecognizer):
             logger.error("LBPH recognizer not trained")
             return RecognitionResult(user_id=None, confidence=0.0)
         
+        if self.recognizer is None:
+            logger.error("LBPH recognizer not available (OpenCV version without face module)")
+            return RecognitionResult(user_id=None, confidence=0.0)
+        
         try:
             # Ensure the image is grayscale for LBPH
             if len(face_image.shape) == 3:
@@ -105,6 +113,33 @@ class LBPHRecognizer(IRecognizer):
         except Exception as e:
             logger.error(f"LBPH recognition failed: {e}")
             return RecognitionResult(user_id=None, confidence=0.0)
+    
+    def enroll(self, user_id: str, face_image: np.ndarray) -> bool:
+        """Enroll a user with a face image"""
+        return self.register_user(user_id, face_image)
+    
+    def get_embedding(self, face_image: np.ndarray) -> np.ndarray:
+        """Get face embedding from image"""
+        try:
+            # Ensure the image is grayscale
+            if len(face_image.shape) == 3:
+                face_gray = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
+            else:
+                face_gray = face_image
+            
+            # Preprocess face
+            detected_face = self._preprocess_face(face_gray)
+            
+            if detected_face is None:
+                logger.error("No face detected in input image")
+                return np.array([])
+            
+            # Extract features (simplified - return processed face)
+            return detected_face.flatten()
+            
+        except Exception as e:
+            logger.error(f"Error extracting embedding: {e}")
+            return np.array([])
     
     def register_user(self, user_id: str, face_image: np.ndarray) -> bool:
         """Register a new user with their face image"""
@@ -147,6 +182,10 @@ class LBPHRecognizer(IRecognizer):
         """Train the LBPH recognizer with accumulated training data"""
         if not hasattr(self, 'training_images') or len(self.training_images) == 0:
             logger.warning("No training data available")
+            return False
+        
+        if self.recognizer is None:
+            logger.error("LBPH recognizer not available (OpenCV version without face module)")
             return False
         
         try:

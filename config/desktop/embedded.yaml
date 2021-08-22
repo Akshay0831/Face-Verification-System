@@ -1,0 +1,189 @@
+# Desktop Embedded Configuration
+# Environment: Embedded/Raspberry Pi
+# Generated on: 2022-12-01
+
+embedded:
+  # Interface settings for embedded systems
+  interface:
+    theme: default
+    language: en
+    debug_mode: false
+    auto_start_camera: true
+    minimal_ui: true
+    full_screen: true
+    
+  # System settings for embedded systems
+  system:
+    camera:
+      device_index: 0
+      resolution: "640x480"
+      fps: 15
+      buffer_size: 3
+    processing:
+      max_fps: 15
+      multi_threading: true
+      batch_processing: true
+      cache_size: 50
+    plugins:
+      default_detector: "Haar Cascade"
+      default_recognizer: "VGG Recognition"
+      default_liveness: "Basic Liveness"
+      debug_mode: false
+      
+  # Embedded-specific settings
+  embedded:
+    auto_boot: true
+    auto_launch: true
+    idle_timeout_seconds: 300
+    power_save_mode: true
+    hardware_acceleration: true
+    thermal_monitoring: true
+    cpu_frequency_scaling: true
+    auto_reboot_on_error: true
+    error_log_reboot_count: 5
+    
+  # Performance settings for embedded systems
+  performance:
+    enable_gpu: false
+    thread_pool_size: 2
+    memory_limit_mb: 512
+    optimization_level: "balanced"
+    cache_optimization: true
+    reduce_animations: true
+    disable_visual_effects: true
+    
+  # Security settings for embedded systems
+  security:
+    data_encryption: true
+    log_all_operations: false
+    require_admin_for_changes: true
+    session_timeout_minutes: 60
+    enable_audit_trail: false
+    max_login_attempts: 3
+    account_lockout_duration_minutes: 5
+    
+  # Logging configuration
+  logging:
+    level: WARNING
+    file: logs/desktop_embedded.log
+    max_size_mb: 2
+    backup_count: 2
+    format: '[%(asctime)s] %(levelname)s - %(message)s'
+    include_debug: false
+    
+  # Plugin configuration
+  plugins:
+    embedded:
+      enable_plugin_debugging: false
+      log_plugin_performance: false
+      auto_reload_plugins: false
+      plugin_timeout_seconds: 60
+      
+  # Feature flags
+  features:
+    enable_experimental_features: false
+    enable_beta_features: false
+    show_deprecated_warnings: false
+    enable_advanced_settings: false
+    enable_statistics: false
+    enable_network_settings: false
+    
+  # File system settings
+  filesystem:
+    use_tmpfs_for_cache: true
+    ramdisk_size_mb: 128
+    log_to_ramdisk: true
+    minimize_disk_io: true
+    enable_disk_monitoring: true
+    
+  # Power management
+  power:
+    cpu_governor: "powersave"
+    gpu_power_management: true
+    display_power_management: true
+    backlight_timeout_minutes: 5
+    sleep_after_minutes: 10
+    hibernate_after_minutes: 30
+    
+  # Hardware configuration
+  hardware:
+    camera_type: "standard"
+    capture_device: "/dev/video0"
+    display_device: ":0"
+    audio_device: "default"
+    gpio_pins: []
+    sensor_pins: []
+    
+  # Network settings
+  network:
+    enable_network: true
+    dhcp_enabled: true
+    static_ip: ""
+    subnet_mask: ""
+    gateway: ""
+    dns_servers: ["8.8.8.8", "8.8.4.4"]
+    wireless_enabled: false
+    ethernet_enabled: true
+    port_forwarding: []
+    firewall_enabled: true
+    
+  # Storage optimization
+  storage:
+    auto_clean_cache: true
+    cache_clean_interval_hours: 24
+    max_log_size_mb: 5
+    max_temp_files: 100
+    auto_delete_old_data: true
+    data_retention_days: 7
+    
+  # System maintenance
+  maintenance:
+    auto_update: false
+    update_check_frequency: "monthly"
+    maintenance_window_start: "02:00"
+    maintenance_window_duration_hours: 2
+    auto_restart_after_update: false
+    backup_enabled: false
+    backup_location: "/var/backups"
+    
+  # Hardware monitoring
+  monitoring:
+    temperature_monitoring: true
+    cpu_monitoring: true
+    memory_monitoring: true
+    disk_monitoring: true
+    network_monitoring: true
+    sensor_monitoring: true
+    alert_thresholds:
+      cpu_temperature_celsius: 70
+      cpu_usage_percent: 80
+      memory_usage_percent: 85
+      disk_usage_percent: 90
+      
+  # Deployment settings
+  deployment:
+    install_service: true
+    autostart: true
+    run_as_root: false
+    service_user: "pi"
+    working_directory: "/home/pi/face-verification"
+    pid_file: "/var/run/face-verification.pid"
+    log_directory: "/var/log/face-verification"
+    
+  # Boot configuration
+  boot:
+    startup_delay_seconds: 5
+    check_dependencies: true
+    initialize_hardware: true
+    load_modules: ["v4l2_common", "bcm2835_v4l2"]
+    enable_display: true
+    
+  # Service configuration
+  service:
+    name: "face-verification"
+    description: "Face Verification System - Embedded Mode"
+    start_delay_seconds: 10
+    stop_timeout_seconds: 30
+    restart_on_failure: true
+    max_restart_attempts: 3
+    restart_delay_seconds: 60

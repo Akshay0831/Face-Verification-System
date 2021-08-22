@@ -1,0 +1,113 @@
+# Raspberry Pi Deployment Configuration
+# Optimized for Raspberry Pi devices
+
+# System settings
+system:
+  name: "Face Verification System - Raspberry Pi"
+  version: "1.0.0"
+  debug: false
+  log_level: "WARNING"
+  log_directory: "logs"
+  data_directory: "data"
+  
+# Performance optimization
+device:
+  type: "raspberry_pi"
+  performance_mode: "standard"
+  optimizations:
+    disable_gpu: true
+    thermal_monitoring: true
+    cpu_governor: "ondemand"
+    memory_limit: "256M"
+    swap_optimization: true
+    disable_unservices: true
+  
+# Plugin configuration
+plugins:
+  detection:
+    plugin: "basic_detector"
+    config:
+      min_confidence: 0.4  # Lower confidence for edge detection
+      scale_factor: 1.2   # Faster detection with slightly lower accuracy
+      min_neighbors: 3    # Faster processing
+      face_cascade_path: "cascades/haarcascade_frontalface_default.xml"
+      enable_gpu: false
+  
+  recognition:
+    plugin: "lbph"
+    config:
+      threshold: 0.6
+      radius: 3
+      neighbors: 8
+      grid_x: 8
+      grid_y: 8
+      model_path: "models/lbpi_model.yml"
+  
+  liveness:
+    plugin: "blink_detector"
+    config:
+      min_eyes: 1
+      blink_threshold: 25.0
+      ear_threshold: 0.3
+      history_length: 20  # Shorter history for memory efficiency
+  
+  notification:
+    plugin: "email_notifier"
+    config:
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      use_tls: true
+      from_email: "raspberry_pi@example.com"
+      default_to_email: "admin@example.com"
+      retry_attempts: 2  # Fewer retries for slow connections
+
+# Database configuration (SQLite for Raspberry Pi)
+database:
+  type: "sqlite"
+  connection_string: "data/raspberry_pi_face_verification.db"
+  backup_enabled: true
+  backup_interval: 86400  # 24 hours
+  max_backup_files: 7
+
+# Performance settings (optimized for Raspberry Pi)
+performance:
+  max_fps: 15  # Reduced for better performance
+  frame_buffer_size: 5  # Smaller buffer
+  enable_multi_threading: false  # Avoid overhead on single core
+  thread_count: 1
+  
+# System resources
+resources:
+  max_cpu_usage: 80     # % CPU threshold
+  max_memory_usage: 200  # MB threshold
+  thermal_threshold: 75 # Celsius threshold
+  enable_battery_monitoring: true
+
+# Security settings
+security:
+  enable_authentication: false  # Usually not needed for embedded
+  session_timeout: 1800  # 30 minutes
+  max_failed_attempts: 5
+  lock_duration: 600  # 10 minutes
+
+# Feature flags (limited for embedded)
+features:
+  enable_real_time_processing: true
+  enable_save_results: true
+  enable_export_logs: false  # Disabled for storage
+  enable_remote_access: false  # Disabled for security
+  
+# Hardware settings
+hardware:
+  camera:
+    resolution: "640x480"
+    fps: 30
+    format: "BGR"
+    exposure: "auto"
+    gain: "auto"
+  
+  storage:
+    enable_write_buffering: true
+    buffer_size: 1000
+    auto_cleanup: true
+    cleanup_interval: 86400  # 24 hours

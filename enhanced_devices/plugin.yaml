@@ -1,0 +1,31 @@
+name: enhanced_devices
+type: device
+version: 2.0.0
+description: Enhanced device management with mobile and embedded optimization
+author: Face Verification System Team
+dependencies:
+  - psutil
+  - subprocess
+  - kivy
+  - PyQt5
+auto_load: true
+priority: medium
+configurable: true
+default_device: raspberry_pi
+fallback_devices:
+  - android
+  - desktop
+device_optimization:
+  raspberry_pi:
+    cpu_scaling: true
+    thermal_monitoring: true
+    gpu_acceleration: false
+  android:
+    mobile_optimization: true
+    battery_saving: true
+    background_processing: false
+performance:
+  device_buffer: 5
+  async_processing: true
+  power_management: true
+file: __init__.py

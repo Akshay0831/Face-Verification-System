@@ -1,0 +1,22 @@
+name: enhanced_recognition
+type: recognition
+version: 2.0.0
+description: Enhanced face recognition with deep learning and traditional methods
+author: Face Verification System Team
+dependencies:
+  - opencv-python
+  - numpy
+  - tensorflow
+  - keras
+auto_load: true
+priority: high
+configurable: true
+default_recognizer: vgg_face
+fallback_recognizers:
+  - lbph
+recognition_threshold: 0.7
+performance:
+  batch_processing: true
+  max_batch_size: 32
+  use_gpu: false
+file: __init__.py

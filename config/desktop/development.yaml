@@ -1,0 +1,94 @@
+# Desktop Development Configuration
+# Environment: Development
+# Generated on: 2022-12-01
+
+development:
+  # Interface settings for development
+  interface:
+    theme: dark
+    language: en
+    debug_mode: true
+    show_advanced: true
+    
+  # System settings for development
+  system:
+    camera:
+      device_index: 0
+      resolution: "640x480"
+      fps: 15
+      buffer_size: 5
+    processing:
+      max_fps: 15
+      multi_threading: false
+      batch_processing: false
+      cache_size: 50
+    plugins:
+      default_detector: "Basic Detector"
+      default_recognizer: "VGG Recognition"
+      default_liveness: "Basic Liveness"
+      debug_mode: true
+      
+  # Development-specific settings
+  development:
+    debug_logging: true
+    show_details: true
+    performance_monitoring: true
+    auto_save_interval: 30
+    backup_on_close: true
+    update_check_frequency: "daily"
+    
+  # Performance settings for development
+  performance:
+    enable_gpu: false
+    thread_pool_size: 2
+    memory_limit_mb: 1024
+    debug_timeout: 300
+    
+  # Security settings for development
+  security:
+    data_encryption: false
+    log_all_operations: true
+    require_admin_for_changes: false
+    session_timeout_minutes: 120
+    
+  # Logging configuration
+  logging:
+    level: DEBUG
+    file: logs/desktop_dev.log
+    max_size_mb: 5
+    backup_count: 3
+    format: '[%(asctime)s] %(name)s - %(levelname)s - %(message)s'
+    include_debug: true
+    
+  # Plugin configuration
+  plugins:
+    development:
+      enable_plugin_debugging: true
+      log_plugin_performance: true
+      auto_reload_plugins: true
+      
+  # Feature flags
+  features:
+    enable_experimental_features: true
+    enable_beta_features: true
+    show_deprecated_warnings: true
+    
+  # Testing configuration
+  testing:
+    auto_test_on_startup: true
+    test_timeout_seconds: 30
+    generate_test_data: true
+    
+  # Integration settings
+  integration:
+    enable_api_server: true
+    api_port: 5001
+    enable_webhook: false
+    webhook_url: ""
+    
+  # Build and deployment
+  build:
+    mode: "development"
+    version_check: true
+    auto_update: false
+    check_for_updates: true

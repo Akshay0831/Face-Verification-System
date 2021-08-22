@@ -1,0 +1,196 @@
+# Server Deployment Configuration
+# Optimized for server environments
+
+# System settings
+system:
+  name: "Face Verification System - Server"
+  version: "1.0.0"
+  debug: false
+  log_level: "INFO"
+  log_directory: "/var/log/face_verification"
+  data_directory: "/var/lib/face_verification"
+  
+# Performance optimization
+device:
+  type: "linux"
+  performance_mode: "standard"
+  optimizations:
+    enable_gpu: true
+    cpu_governor: "performance"
+    memory_optimization: true
+    connection_pooling: true
+    cache_management: true
+  
+# Enhanced features configuration
+enhanced_features:
+  enabled: true
+  performance_optimization: true
+  default_detection: "multi_detector"
+  default_recognition: "vgg_face"
+  default_liveness: "motion_analyzer"
+  algorithm_selection: "auto"
+  
+  # Performance optimization settings
+  performance:
+    enable_gpu: true
+    enable_multi_threading: true
+    thread_count: 8
+    memory_limit_mb: 4096
+    cache_size: 1000
+    batch_processing: true
+    
+  # Algorithm-specific settings
+  detection:
+    primary_detector: "multi_detector"
+    fallback_detectors: ["hog_detector", "viola_jones_detector"]
+    confidence_threshold: 0.7
+    enable_fallback: true
+    
+  recognition:
+    primary_recognizer: "vgg_face"
+    fallback_recognizers: ["lbph"]
+    recognition_threshold: 0.8
+    enable_embedding_cache: true
+    
+  liveness:
+    primary_liveness: "motion_analyzer"
+    fallback_liveness: ["blink_detector"]
+    liveness_threshold: 0.85
+    enable_multi_method: true
+    
+  notifications:
+    default_notifier: "email"
+    fallback_notifiers: ["sms", "webhook"]
+    async_processing: true
+    retry_attempts: 3
+    
+  devices:
+    default_device: "raspberry_pi"
+    fallback_devices: ["android", "desktop"]
+    device_optimization: true
+    power_management: true
+
+# Plugin configuration
+plugins:
+  detection:
+    plugin: "multi_detector"
+    config:
+      primary_plugin: "hog_detector"
+      fallback_plugin: "basic_detector"
+      min_confidence: 0.6
+      enable_parallel_processing: true
+      frame_buffer_size: 10
+  
+  recognition:
+    plugin: "vgg_face"
+    config:
+      model_weights: "/models/vgg_face_weights.h5"
+      image_size: [224, 224]
+      similarity_threshold: 0.45
+      use_preprocessing: true
+      embedding_cache_size: 5000
+      enable_real_time_recognition: true
+  
+  liveness:
+    plugin: "motion_analyzer"
+    config:
+      motion_threshold: 15.0
+      min_motion_frames: 5
+      max_static_frames: 15
+      history_length: 30
+      enable_background_subtraction: true
+  
+  notification:
+    plugin: "email_notifier"
+    config:
+      smtp_server: "smtp.example.com"
+      smtp_port: 587
+      use_tls: true
+      from_email: "alerts@company.com"
+      default_to_email: "security@company.com"
+      retry_attempts: 3
+
+# Database configuration (PostgreSQL for server)
+database:
+  type: "postgresql"
+  connection_string: "postgresql://user:password@localhost:5432/face_verification"
+  pool_size: 20
+  max_overflow: 30
+  timeout: 30
+  backup_enabled: true
+  backup_interval: 3600  # 1 hour
+  max_backup_files: 24
+  enable_replication: true
+
+# Performance settings (optimized for server)
+performance:
+  max_fps: 60  # Higher performance for server
+  frame_buffer_size: 50
+  enable_multi_threading: true
+  thread_count: 8
+  enable_load_balancing: true
+  queue_size: 1000
+
+# Security settings
+security:
+  enable_authentication: true
+  session_timeout: 3600  # 1 hour
+  max_failed_attempts: 3
+  lock_duration: 300  # 5 minutes
+  enable_ssl: true
+  ssl_cert_path: "/etc/ssl/certs/server.crt"
+  ssl_key_path: "/etc/ssl/private/server.key"
+  api_key_required: true
+
+# Feature flags (full feature set for server)
+features:
+  enable_real_time_processing: true
+  enable_save_results: true
+  enable_export_logs: true
+  enable_remote_access: true
+  enable_api_endpoint: true
+  enable_web_interface: true
+  enable_admin_panel: true
+  
+# API settings
+api:
+  host: "0.0.0.0"
+  port: 5000
+  workers: 4
+  max_request_size: "100MB"
+  timeout: 30
+  enable_cors: true
+  rate_limit: 100  # requests per minute
+  authentication: "jwt"
+  
+# Database settings (PostgreSQL)
+database:
+  type: "postgresql"
+  connection_string: "postgresql://user:password@localhost:5432/face_verification"
+  pool_size: 20
+  max_overflow: 30
+  timeout: 30
+  backup_enabled: true
+  backup_interval: 3600  # 1 hour
+  max_backup_files: 24
+  enable_replication: true
+  
+# Monitoring and logging
+monitoring:
+  enable_health_check: true
+  check_interval: 60
+  enable_metrics: true
+  metrics_port: 9090
+  log_level: "INFO"
+  log_rotation: true
+  log_max_size: "100MB"
+  log_backup_count: 5
+  
+# Scaling settings
+scaling:
+  enable_auto_scaling: true
+  max_instances: 10
+  min_instances: 2
+  scale_up_threshold: 80  # CPU percentage
+  scale_down_threshold: 20  # CPU percentage
+  cooldown_period: 300  # seconds

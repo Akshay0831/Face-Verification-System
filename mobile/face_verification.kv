@@ -1,0 +1,137 @@
+#:kivy 2.0.0
+
+<MainScreen>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'background.jpg'  # Add a background image if available
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        
+        Label:
+            text: 'Face Verification'
+            font_size: '24sp'
+            size_hint_y: None
+            height: 50
+            halign: 'center'
+            color: 0, 0, 0, 1
+        
+        Camera:
+            id: camera
+            resolution: (640, 480)
+            play: True
+            size_hint_y: 0.7
+        
+        BoxLayout:
+            size_hint_y: None
+            height: 60
+            spacing: 10
+            
+            Button:
+                text: 'Capture'
+                background_color: 0, 0.8, 0, 1
+                font_size: '18sp'
+                on_press: root.capture_image(self)
+            
+            Button:
+                text: 'Switch Camera'
+                background_color: 0.5, 0.5, 1, 1
+                font_size: '18sp'
+                on_press: root.switch_camera(self)
+        
+        Label:
+            id: status_label
+            text: 'Ready to capture'
+            font_size: '14sp'
+            size_hint_y: None
+            height: 40
+            halign: 'center'
+            color: 0, 0, 0, 1
+        
+        ProgressBar:
+            id: progress
+            max: 100
+            value: 0
+            size_hint_y: None
+            height: 20
+            opacity: 0
+
+<UsersScreen>:
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'background.jpg'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        
+        Label:
+            text: 'User Management'
+            font_size: '24sp'
+            size_hint_y: None
+            height: 50
+            halign: 'center'
+            color: 0, 0, 0, 1
+        
+        ScrollView:
+            size_hint_y: 0.6
+            
+            Label:
+                id: users_label
+                text: 'Loading users...'
+                font_size: '16sp'
+                size_hint_y: None
+                height: 200
+                halign: 'left'
+                valign: 'top'
+                text_size: self.width, None
+        
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            spacing: 10
+            
+            Button:
+                text: 'Add User'
+                background_color: 0, 0.8, 0, 1
+                font_size: '18sp'
+                on_press: root.add_user(self)
+            
+            Button:
+                text: 'Back'
+                background_color: 0.8, 0, 0, 1
+                font_size: '18sp'
+                on_press: root.go_back(self)
+
+<Popup>:
+    title_size: '20sp'
+    auto_dismiss: True
+    size_hint: 0.9, 0.8
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+        spacing: 10
+        
+        Label:
+            id: popup_label
+            text: ''
+            font_size: '16sp'
+            size_hint_y: None
+            height: 100
+            halign: 'left'
+            valign: 'top'
+            text_size: self.width, None
+        
+        Button:
+            text: 'Close'
+            size_hint_y: None
+            height: 50
+            on_press: root.dismiss

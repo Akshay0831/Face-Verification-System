@@ -42,7 +42,18 @@ class PluginManager:
             os.path.join(os.path.dirname(os.path.dirname(__file__)), 'plugins')
         ]
         
-        for plugin_dir in default_dirs:
+        # Add enhanced plugin directories
+        enhanced_dirs = [
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'enhanced_detections'),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'enhanced_recognition'),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'enhanced_liveness'),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'enhanced_notifications'),
+            os.path.join(os.path.dirname(os.path.dirname(__file__)), 'enhanced_devices')
+        ]
+        
+        all_dirs = default_dirs + enhanced_dirs
+        
+        for plugin_dir in all_dirs:
             if os.path.exists(plugin_dir) and plugin_dir not in self.plugin_dirs:
                 self.plugin_dirs.append(plugin_dir)
     

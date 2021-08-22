@@ -1,0 +1,21 @@
+name: enhanced_liveness
+type: liveness
+version: 2.0.0
+description: Enhanced liveness detection with multiple anti-spoofing methods
+author: Face Verification System Team
+dependencies:
+  - opencv-python
+  - numpy
+  - dlib
+auto_load: true
+priority: high
+configurable: true
+default_liveness: motion_analyzer
+fallback_liveness:
+  - blink_detector
+liveness_threshold: 0.8
+performance:
+  processing_fps: 15
+  buffer_frames: 5
+  multi_method: true
+file: __init__.py

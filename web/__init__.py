@@ -1,0 +1,1 @@
+"""Web interface for Face Verification System"""

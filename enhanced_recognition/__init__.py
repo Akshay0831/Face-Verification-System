@@ -1,0 +1,1 @@
+"""Future recognition plugins implementation"""

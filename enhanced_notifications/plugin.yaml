@@ -1,0 +1,25 @@
+name: enhanced_notifications
+type: notification
+version: 2.0.0
+description: Enhanced multi-channel notification system with webhooks
+author: Face Verification System Team
+dependencies:
+  - requests
+  - smtplib
+  - json
+auto_load: true
+priority: medium
+configurable: true
+default_notifier: email
+fallback_notifiers:
+  - sms
+  - webhook
+notification_channels:
+  - email
+  - sms
+  - webhook
+performance:
+  async_processing: true
+  retry_attempts: 3
+  timeout_seconds: 30
+file: __init__.py

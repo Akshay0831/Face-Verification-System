@@ -106,10 +106,25 @@ class FaceVerificationSystem:
     def _load_plugins(self) -> bool:
         """Load and initialize all required plugins"""
         try:
-            # Load all plugins
+            # Load enhanced plugins from enhanced directories
+            enhanced_paths = [
+                'enhanced_detections',
+                'enhanced_recognition',
+                'enhanced_liveness', 
+                'enhanced_notifications',
+                'enhanced_devices'
+            ]
+            
+            # Load standard plugins
             if not self.plugin_manager.load_plugins():
                 logger.error("Failed to load plugins")
                 return False
+            
+            # Load enhanced plugins if enabled
+            enhanced_config = self.config.get('enhanced_features', {})
+            if enhanced_config.get('enabled', True):
+                for path in enhanced_paths:
+                    self.plugin_manager.add_plugin_directory(path)
             
             # Initialize plugins with configuration
             if not self.plugin_manager.initialize_plugins(self.config.get('plugins', {})):
@@ -148,6 +163,34 @@ class FaceVerificationSystem:
                 logger.warning("vgg_face plugin is not a valid IRecognizer")
         
         # Get liveness plugin
+        
+        # Load enhanced plugins if available
+        enhanced_plugins_config = self.config.get('enhanced_features', {})
+        if enhanced_plugins_config.get('enabled', True):
+            
+            # Load enhanced detection plugin
+            enhanced_detection = enhanced_plugins_config.get('default_detection', 'multi_detector')
+            if enhanced_detection in plugins_config:
+                detection_plugin = self.plugin_manager.get_plugin_by_name(enhanced_detection)
+                if isinstance(detection_plugin, IDetector):
+                    self.detection_plugin = detection_plugin
+                    logger.info(f"Loaded enhanced detection plugin: {enhanced_detection}")
+            
+            # Load enhanced recognition plugin
+            enhanced_recognition = enhanced_plugins_config.get('default_recognition', 'vgg_face')
+            if enhanced_recognition in plugins_config:
+                recognition_plugin = self.plugin_manager.get_plugin_by_name(enhanced_recognition)
+                if isinstance(recognition_plugin, IRecognizer):
+                    self.recognition_plugin = recognition_plugin
+                    logger.info(f"Loaded enhanced recognition plugin: {enhanced_recognition}")
+            
+            # Load enhanced liveness plugin
+            enhanced_liveness = enhanced_plugins_config.get('default_liveness', 'motion_analyzer')
+            if enhanced_liveness in plugins_config:
+                liveness_plugin = self.plugin_manager.get_plugin_by_name(enhanced_liveness)
+                if isinstance(liveness_plugin, ILivenessDetector):
+                    self.liveness_plugin = liveness_plugin
+                    logger.info(f"Loaded enhanced liveness plugin: {enhanced_liveness}")
         if 'blink_detector' in plugins_config:
             liveness_plugin = self.plugin_manager.get_plugin_by_name('blink_detector')
             if isinstance(liveness_plugin, ILivenessDetector):

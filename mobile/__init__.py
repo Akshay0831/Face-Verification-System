@@ -1,0 +1,1 @@
+"""Mobile interface for Face Verification System"""

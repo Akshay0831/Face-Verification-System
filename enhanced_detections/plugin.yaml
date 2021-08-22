@@ -1,0 +1,22 @@
+name: enhanced_detections
+type: detection
+version: 2.0.0
+description: Enhanced face detection algorithms with fallback and optimization
+author: Face Verification System Team
+dependencies:
+  - opencv-python
+  - numpy
+  - dlib
+auto_load: true
+priority: high
+configurable: true
+default_detector: multi_detector
+fallback_detectors:
+  - basic
+  - hog
+  - viola_jones
+performance:
+  max_fps: 30
+  buffer_size: 10
+  multi_threading: true
+file: __init__.py

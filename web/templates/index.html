@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-camera"></i> Face Verification</h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label for="imageInput" class="form-label">Select Image</label>
+                    <input type="file" class="form-control" id="imageInput" accept="image/*">
+                    <div class="form-text">Upload an image containing faces to verify</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Preview</label>
+                    <div class="border rounded p-3 text-center bg-light" id="previewArea">
+                        <img id="previewImage" class="result-image" style="display: none;" alt="Preview">
+                        <div id="placeholderText">
+                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No image selected</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="verifyButton">
+                    <i class="fas fa-search"></i> Verify Faces
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Results</h5>
+            </div>
+            <div class="card-body">
+                <div id="resultsArea">
+                    <div class="text-muted text-center">
+                        <i class="fas fa-clipboard-list fa-2x mb-2"></i>
+                        <p>Upload an image to see results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-users"></i> Recent Detections</h5>
+            </div>
+            <div class="card-body">
+                <div id="recentDetections">
+                    <div class="text-muted text-center">
+                        <p>No recent detections</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('previewImage');
+    const placeholderText = document.getElementById('placeholderText');
+    const verifyButton = document.getElementById('verifyButton');
+    const resultsArea = document.getElementById('resultsArea');
+    
+    let currentImageData = null;
+    
+    // Handle image selection
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                placeholderText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Handle verification
+    verifyButton.addEventListener('click', function() {
+        if (!currentImageData) {
+            showError('Please select an image first');
+            return;
+        }
+        
+        showLoading();
+        
+        const formData = new FormData();
+        formData.append('image', imageInput.files[0]);
+        
+        fetch('/api/verify', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            
+            if (data.success) {
+                displayResults(data);
+                showSuccess('Face verification completed successfully');
+            } else {
+                showError(data.error || 'Verification failed');
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showError('Error during verification: ' + error.message);
+        });
+    });
+    
+    function displayResults(data) {
+        let html = '<div class="d-flex align-items-center mb-3">';
+        
+        // Display image with bounding boxes
+        html += '<div class="me-3">';
+        html += `<img src="data:image/jpeg;base64,${data.image_base64}" class="result-image" style="max-width: 300px;">`;
+        html += '</div>';
+        
+        // Display detection details
+        html += '<div class="flex-grow-1">';
+        html += `<small class="text-muted">Detected at: ${data.timestamp}</small><br>`;
+        
+        if (data.detections && data.detections.length > 0) {
+            html += `<strong>Detections:</strong> ${data.detections.length}<br>`;
+            data.detections.forEach(detection => {
+                html += `<small>Face - Confidence: ${(detection.confidence * 100).toFixed(1)}%</small><br>`;
+            });
+        }
+        
+        if (data.recognitions && data.recognitions.length > 0) {
+            html += `<br><strong>Recognitions:</strong><br>`;
+            data.recognitions.forEach(recognition => {
+                html += `<small>User: ${recognition.user_id} - ${(recognition.confidence * 100).toFixed(1)}%</small><br>`;
+            });
+        }
+        
+        if (data.liveness_check !== null) {
+            html += `<br><strong>Liveness:</strong> ${data.liveness_check ? 'Live' : 'Not Live'}`;
+            if (data.liveness_confidence !== undefined) {
+                html += ` (${(data.liveness_confidence * 100).toFixed(1)}%)`;
+            }
+        }
+        
+        html += '</div></div>';
+        
+        resultsArea.innerHTML = html;
+        
+        // Add to recent detections
+        addRecentDetection(data);
+    }
+    
+    function addRecentDetection(data) {
+        const recentDetections = document.getElementById('recentDetections');
+        let html = '<div class="mb-3 p-3 border rounded">';
+        
+        if (data.detections && data.detections.length > 0) {
+            html += `<div class="d-flex align-items-center mb-2">
+                <img src="data:image/jpeg;base64,${data.image_base64}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                <div class="ms-3">
+                    <small class="text-muted">${data.timestamp}</small><br>
+                    <strong>${data.detections.length} face(s) detected</strong><br>`;
+                    
+            if (data.recognitions && data.recognitions.length > 0) {
+                html += `<small class="text-success">Recognized: ${data.recognizations.length} user(s)</small>`;
+            }
+            
+            html += '</div></div>';
+        }
+        
+        html += '</div>';
+        
+        // Insert at the beginning
+        if (recentDetections.innerHTML.includes('No recent detections')) {
+            recentDetections.innerHTML = html;
+        } else {
+            recentDetections.insertAdjacentHTML('afterbegin', html);
+        }
+    }
+});
+</script>
+{% endblock %}

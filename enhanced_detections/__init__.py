@@ -1,0 +1,1 @@
+"""Future detection plugins implementation"""

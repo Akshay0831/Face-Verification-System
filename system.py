@@ -21,16 +21,14 @@ class FaceVerificationSystem:
     
     def __init__(self, config_path: Optional[str] = None):
         """Initialize face verification system"""
-        package_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self.config_path = config_path or os.path.join(
-            package_dir, 'face_verification_system', 'config', 'system.yaml'
-        )
+        package_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = config_path or os.path.join(package_dir, 'config', 'system.yaml')
         logger.debug(f"Using config path: {self.config_path}")
         self.config = {}
         
         # Initialize core components
         self.plugin_manager = PluginManager()
-        self.device_manager = DeviceManager(self.plugin_manager)
+        self.device_manager = DeviceManager()
         
         # System state
         self.initialized = False
@@ -487,6 +485,11 @@ class FaceVerificationSystem:
         
         # Show the frame
         cv2.imshow('Face Verification', frame)
+    
+    def stop(self):
+        """Stop the system"""
+        logger.warning("System is not running")
+        return True
     
     def shutdown(self):
         """Shutdown the system gracefully"""

@@ -44,7 +44,7 @@ class MotionAnalyzer(ILivenessDetector):
             self.motion_history.clear()
             self.previous_gray = None
             
-            logger.info("Motion analyzer initialized successfully")
+            logger.debug("Motion analyzer initialized successfully")
             return True
             
         except Exception as e:
@@ -135,6 +135,16 @@ class MotionAnalyzer(ILivenessDetector):
     def _calculate_motion(self, current_frame: np.ndarray, previous_frame: np.ndarray) -> float:
         """Calculate motion score between two frames"""
         try:
+            # Validate input frames
+            if current_frame is None or previous_frame is None:
+                logger.warning("One or both frames are None in motion calculation")
+                return 0.0
+            
+            # Ensure frames are same size
+            if current_frame.shape != previous_frame.shape:
+                logger.debug("Frame size mismatch in motion calculation, resizing previous frame")
+                previous_frame = cv2.resize(previous_frame, (current_frame.shape[1], current_frame.shape[0]))
+            
             # Calculate absolute difference
             diff = cv2.absdiff(current_frame, previous_frame)
             

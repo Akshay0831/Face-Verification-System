@@ -48,7 +48,7 @@ class ViolaJonesDetector(IDetector):
                 if os.path.exists(cascade_path):
                     self.detector = cv2.CascadeClassifier(cascade_path)
                 else:
-                    logger.warning("No cascade classifier found, using basic detection")
+                    logger.debug("No cascade classifier found, using basic detection")
                     self.detector = None
             
             if self.detector is None:

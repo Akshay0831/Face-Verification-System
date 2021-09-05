@@ -152,7 +152,7 @@ class TestEnhancedNotifications(unittest.TestCase):
             self.assertTrue(success)
             mock_post.assert_called_once()
     
-    def_webhook_notification_channel_initialization(self):
+    def test_webhook_notification_channel_initialization(self):
         """Test WebhookNotificationChannel initialization"""
         channel = WebhookNotificationChannel()
         

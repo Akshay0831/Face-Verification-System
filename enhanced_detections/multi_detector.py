@@ -47,12 +47,18 @@ class MultiDetector(IDetector):
                 self.detectors['basic'].initialize(self.config.get('basic_config', {}))
                 logger.info("Basic detector initialized")
             except ImportError:
-                logger.warning("Basic detector not available")
+                logger.debug("Basic detector not available")
             
             # Initialize HOG detector
-            self.detectors['hog'] = HOGDetector()
-            self.detectors['hog'].initialize(self.config.get('hog_config', {}))
-            logger.info("HOG detector initialized")
+            try:
+                self.detectors['hog'] = HOGDetector()
+                self.detectors['hog'].initialize(self.config.get('hog_config', {}))
+                logger.info("HOG detector initialized")
+            except ImportError:
+                logger.debug("dlib is required for HOGDetector but not installed, skipping HOG detector")
+            except Exception as e:
+                logger.error(f"Error initializing HOG detector: {e}")
+                logger.warning("HOG detector initialization failed, skipping")
             
             # Initialize Viola-Jones detector
             self.detectors['viola_jones'] = ViolaJonesDetector()
@@ -63,7 +69,7 @@ class MultiDetector(IDetector):
             if self.primary_detector in self.detectors:
                 logger.info(f"Primary detector set to: {self.primary_detector}")
             else:
-                logger.warning(f"Primary detector {self.primary_detector} not available, using basic")
+                logger.debug(f"Primary detector {self.primary_detector} not available, using basic")
                 self.primary_detector = 'basic' if 'basic' in self.detectors else 'hog'
             
             logger.info("Multi-detector initialized successfully")
@@ -132,7 +138,7 @@ class MultiDetector(IDetector):
             if self.primary_detector in self.detectors:
                 self.fallback_detectors = []
             else:
-                logger.warning(f"Primary detector {self.primary_detector} not available")
+                logger.debug(f"Primary detector {self.primary_detector} not available")
                 return False
         else:
             logger.error(f"Unknown detection mode: {mode}")

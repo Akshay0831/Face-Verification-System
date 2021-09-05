@@ -48,12 +48,18 @@ class LBPHRecognizer(IRecognizer):
             self.config.update(config)
             
             # Create LBPH recognizer with custom parameters
-            self.recognizer = cv2.face.LBPHFaceRecognizer_create(
-                radius=self.radius,
-                neighbors=self.neighbors,
-                grid_x=self.grid_x,
-            grid_y=self.grid_y
-            )
+            try:
+                self.recognizer = cv2.face.LBPHFaceRecognizer_create(
+                    radius=self.radius,
+                    neighbors=self.neighbors,
+                    grid_x=self.grid_x,
+                    grid_y=self.grid_y
+                )
+            except AttributeError:
+                # Fallback for OpenCV versions without face module
+                self.recognizer = None
+                logger.debug("OpenCV face module not available, LBPH disabled")
+                return False
             
             # Try to load existing model
             model_path = self.config.get('model_path', 'lbph_model.yml')
@@ -144,11 +150,21 @@ class LBPHRecognizer(IRecognizer):
     def register_user(self, user_id: str, face_image: np.ndarray) -> bool:
         """Register a new user with their face image"""
         try:
+            # Validate input image
+            if face_image is None:
+                logger.error("Input face image is None")
+                return False
+            
             # Ensure the image is grayscale
             if len(face_image.shape) == 3:
                 face_gray = cv2.cvtColor(face_image, cv2.COLOR_BGR2GRAY)
             else:
                 face_gray = face_image
+            
+            # Validate grayscale image
+            if face_gray is None or face_gray.size == 0:
+                logger.error("Failed to convert image to grayscale or image is empty")
+                return False
             
             # Detect and preprocess face
             detected_face = self._preprocess_face(face_gray)
@@ -208,9 +224,19 @@ class LBPHRecognizer(IRecognizer):
     def _preprocess_face(self, face_image: np.ndarray) -> Optional[np.ndarray]:
         """Preprocess face image for LBPH"""
         try:
+            # Validate input image
+            if face_image is None or face_image.size == 0:
+                logger.error("Input face image is None or empty")
+                return None
+            
             # Resize to standard size (required by LBPH)
             size = (100, 100)  # Standard size for LBPH
             resized = cv2.resize(face_image, size)
+            
+            # Validate resized image
+            if resized is None or resized.size == 0:
+                logger.error("Face image resizing failed")
+                return None
             
             # Apply histogram equalization for better contrast
             equalized = cv2.equalizeHist(resized)

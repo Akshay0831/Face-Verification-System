@@ -8,9 +8,17 @@ import tempfile
 import time
 from unittest.mock import Mock, patch, MagicMock, call
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QImage, QPixmap
+try:
+    from PyQt5.QtWidgets import QApplication, QMainWindow
+    from PyQt5.QtCore import Qt, QTimer
+    from PyQt5.QtGui import QImage, QPixmap
+except ImportError:
+    QApplication = MagicMock()
+    QMainWindow = MagicMock()
+    Qt = MagicMock()
+    QTimer = MagicMock()
+    QImage = MagicMock()
+    QPixmap = MagicMock()
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))

@@ -4,8 +4,9 @@ import cv2
 import numpy as np
 from typing import List, Dict, Any, Optional
 import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model, Model
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from tensorflow.keras.applications import VGG16, VGG19, ResNet50
 import os
 
 from core.base import IRecognizer, RecognitionResult, PluginMetadata, DeviceType
@@ -48,24 +49,35 @@ class VGGFaceRecognizer(IRecognizer):
                 self.model = load_model(self.model_path)
                 logger.info("VGG-Face model loaded from file")
             else:
-                # Load VGG16 as base for face recognition
-                base_model = tf.keras.applications.VGG16(
-                    weights='vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5',
-                    include_top=False,
-                    input_shape=(224, 224, 3)
-                )
-                
-                # Add custom top layers for face recognition
-                model = tf.keras.Sequential([
-                    base_model,
-                    tf.keras.layers.GlobalAveragePooling2D(),
-                    tf.keras.layers.Dense(512, activation='relu'),
-                    tf.keras.layers.Dropout(0.5),
-                    tf.keras.layers.Dense(128, activation='linear')
-                ])
-                
-                self.model = model
-                logger.info("VGG-Face base model created")
+                # Create VGG-Face model using VGGFace library
+                try:
+                    # Try to use VGGFace library if available
+                    from keras_vggface.vggface import VGGFace
+                    self.model = VGGFace(model='resnet50', weights='vggface', include_top=False)
+                    # Add custom pooling and embedding layer
+                    x = self.model.output
+                    x = GlobalAveragePooling2D()(x)
+                    x = Dense(128, activation='linear')(x)
+                    self.model = Model(inputs=self.model.inputs, outputs=x)
+                    logger.info("VGG-Face model loaded with VGGFace weights")
+                except ImportError:
+                    logger.debug("VGGFace library not available, using VGG16 fallback")
+                    # Fallback to VGG16 with custom top layers
+                    base_model = VGG16(
+                        weights=None,  # Random initialization - will be trained on face data
+                        include_top=False,
+                        input_shape=(224, 224, 3)
+                    )
+                    
+                    # Add custom top layers for face recognition
+                    x = base_model.output
+                    x = GlobalAveragePooling2D()(x)
+                    x = Dense(512, activation='relu')(x)
+                    x = Dropout(0.5)(x)
+                    predictions = Dense(128, activation='linear')(x)
+                    
+                    self.model = Model(inputs=base_model.input, outputs=predictions)
+                    logger.info("VGG-Face model created with VGG16 base (random weights)")
             
             # Create embedding extractor
             self.embedding_model = tf.keras.Model(

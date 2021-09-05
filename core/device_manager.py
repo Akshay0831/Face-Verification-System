@@ -8,7 +8,7 @@ from enum import Enum
 from threading import Lock
 import logging
 
-from .base import IDevice, DeviceType, ICamera
+from .base import IDevice, DeviceType, ICamera, PerformanceMode
 from utils import get_logger
 
 logger = get_logger('device_manager')
@@ -158,19 +158,19 @@ class DeviceManager:
         """Add a device to the manager"""
         with self.lock:
             if device.device_id in self.devices:
-                logger.warning(f"Device {device.device_id} already exists")
+                logger.debug(f"Device {device.device_id} already exists")
                 return False
             
             self.devices[device.device_id] = device
             self.device_types[device.device_type].append(device)
-            logger.info(f"Added device {device.device_id} of type {device.device_type}")
+            logger.debug(f"Added device {device.device_id} of type {device.device_type}")
             return True
     
     def remove_device(self, device_id: str) -> bool:
         """Remove a device from the manager"""
         with self.lock:
             if device_id not in self.devices:
-                logger.warning(f"Device {device_id} not found")
+                logger.debug(f"Device {device_id} not found")
                 return False
             
             device = self.devices[device_id]
@@ -215,6 +215,66 @@ class DeviceManager:
         if device:
             return device.get_status()
         return None
+    
+    def initialize_device(self, config: Dict[str, Any]) -> bool:
+        """Initialize all devices with configuration"""
+        try:
+            initialized_count = 0
+            total_devices = len(self.devices)
+            
+            if total_devices == 0:
+                logger.warning("No devices to initialize")
+                return True
+            
+            for device in self.devices.values():
+                if hasattr(device, 'initialize') and callable(device.initialize):
+                    if device.initialize(config):
+                        initialized_count += 1
+                        logger.info(f"Initialized device {device.device_id}")
+                    else:
+                        logger.error(f"Failed to initialize device {device.device_id}")
+                else:
+                    logger.warning(f"Device {device.device_id} has no initialize method")
+                    # Assume it's initialized if it has no initialize method
+                    initialized_count += 1
+            
+            success = initialized_count == total_devices
+            logger.info(f"Device initialization: {initialized_count}/{total_devices} devices initialized")
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error initializing devices: {e}")
+            return False
+    
+    def set_performance_mode(self, mode: 'PerformanceMode') -> bool:
+        """Set performance mode for all devices"""
+        try:
+            success_count = 0
+            total_devices = len(self.devices)
+            
+            if total_devices == 0:
+                logger.warning("No devices to set performance mode for")
+                return True
+            
+            for device in self.devices.values():
+                if hasattr(device, 'optimize_for_performance') and callable(device.optimize_for_performance):
+                    if device.optimize_for_performance(mode):
+                        success_count += 1
+                        logger.info(f"Set performance mode {mode} for device {device.device_id}")
+                    else:
+                        logger.error(f"Failed to set performance mode {mode} for device {device.device_id}")
+                else:
+                    logger.warning(f"Device {device.device_id} does not support performance mode optimization")
+                    # Assume it's fine if it doesn't support performance mode
+                    success_count += 1
+            
+            success = success_count == total_devices
+            logger.info(f"Performance mode setting: {success_count}/{total_devices} devices updated")
+            return success
+            
+        except Exception as e:
+            logger.error(f"Error setting performance mode: {e}")
+            return False
     
     def get_system_status(self) -> Dict[str, Any]:
         """Get overall system status"""

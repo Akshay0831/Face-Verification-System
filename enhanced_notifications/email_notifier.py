@@ -25,6 +25,7 @@ class EmailNotifier(INotifier):
         self.from_email = self.config.get('from_email', '')
         self.from_name = self.config.get('from_name', 'Face Verification System')
         self.retry_attempts = self.config.get('retry_attempts', 3)
+        self.enabled = True  # Initialize as enabled, will be disabled if config missing
         
     def get_metadata(self) -> PluginMetadata:
         """Return plugin metadata"""
@@ -51,11 +52,18 @@ class EmailNotifier(INotifier):
                 self.from_email = os.getenv('EMAIL_FROM', self.username)
             
             # Validate required configuration
-            if not self.smtp_server or not self.username or not self.password:
-                logger.error("Missing required email configuration")
-                return False
+            if not self.smtp_server:
+                logger.warning("SMTP server not configured - email notifications disabled")
+                self.enabled = False
+                return True  # Return True to allow initialization to continue
+            
+            if not self.username or not self.password:
+                logger.debug("Email credentials not provided - email notifications disabled")
+                self.enabled = False
+                return True  # Return True to allow initialization to continue
             
             logger.info(f"Email notifier initialized for {self.smtp_server}:{self.smtp_port}")
+            self.enabled = True
             return True
             
         except Exception as e:
@@ -67,11 +75,16 @@ class EmailNotifier(INotifier):
                          message: str = "",
                          **kwargs) -> NotificationResult:
         """Send an email notification"""
+        # Check if email is enabled
+        if not getattr(self, 'enabled', False):
+            return NotificationResult(
+                success=False, 
+                message="Email notifications disabled - missing configuration"
+            )
+        
         try:
-            # Get email configuration from kwargs or config
-            to_email = kwargs.get('to_email', self.config.get('default_to_email', ''))
-            subject = kwargs.get('subject', self.config.get('default_subject', 'Face Verification Alert'))
-            
+            to_email = kwargs.get('to_email', kwargs.get('recipient', ''))
+            subject = kwargs.get('subject', 'Face Verification Notification')
             if not to_email:
                 logger.error("No recipient email provided")
                 return NotificationResult(success=False, message="No recipient email provided")

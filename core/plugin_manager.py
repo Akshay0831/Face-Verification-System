@@ -157,7 +157,7 @@ class PluginManager:
             
             # Check if already loaded
             if plugin_name in self.loaded_plugins:
-                logger.warning(f"Plugin {plugin_name} already loaded, skipping")
+                logger.debug(f"Plugin {plugin_name} already loaded, skipping")
                 return True
             
             logger.info(f"Loading plugin: {plugin_name}")
@@ -209,7 +209,7 @@ class PluginManager:
             return True
             
         except Exception as e:
-            logger.error(f"Failed to load plugin {plugin_info.get('name', 'unknown')}: {e}")
+            logger.debug(f"Failed to load plugin {plugin_info.get('name', 'unknown')}: {e}")
             return False
     
     def _find_plugin_class(self, module, plugin_type: str) -> Optional[Type[IPlugin]]:
@@ -221,7 +221,9 @@ class PluginManager:
             'detection': IDetector,
             'recognition': IRecognizer,
             'liveness': ILivenessDetector,
+            'notification': INotifier,
             'notifications': INotifier,
+            'device': IDevice,
             'devices': IDevice,
             'processing': IProcessor,
             'storage': IStorage

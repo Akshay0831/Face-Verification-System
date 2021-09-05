@@ -100,7 +100,7 @@ class FaceVerificationSystem:
             logger.info("Starting face verification system...")
             
             # Connect devices
-            for device in self.device_manager.get_devices_by_type(self.device_manager.DeviceType.CAMERA):
+            for device in self.device_manager.get_devices_by_type(DeviceType.CAMERA):
                 if self.device_manager.connect_device(device.device_id):
                     logger.info(f"Connected camera {device.device_id}")
             
@@ -119,7 +119,7 @@ class FaceVerificationSystem:
     def stop(self) -> bool:
         """Stop the system"""
         if not self.is_running:
-            logger.warning("System is not running")
+            logger.debug("System is not running")
             return True
         
         try:
